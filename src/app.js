@@ -1,20 +1,20 @@
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+// app.js
+const express = require("express")
+const mongoose = require("mongoose")
+const itemRoutes = require("./routes/itemRoutes")
+const dbConfig = require("./config/db")
+const app = express()
 
-const todosRouter = require('./routes/todos');
+// Middleware to parse JSON
+app.use(express.json())
 
-const app = express();
+// Connect to MongoDB
+mongoose
+  .connect(dbConfig.mongoURI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Could not connect to MongoDB...", err))
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// Use routes
+app.use("/api", itemRoutes)
 
-// Routes
-app.use('/todos', todosRouter);
-
-
-module.exports = app;
+module.exports = app
